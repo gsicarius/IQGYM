@@ -100,7 +100,7 @@ $ruta_actual = $_SERVER['PHP_SELF'];
         <?php endif; ?>
 
         <!-- Cerrar Sesión -->
-        <a href="/logout.php" class="flex items-center gap-3 px-6 py-3 text-red-400 hover:bg-red-900/20 hover:text-red-300 transition-colors mt-4 border-t border-gray-800">
+        <a href="logout.php" class="flex items-center gap-3 px-6 py-3 text-red-400 hover:bg-red-900/20 hover:text-red-300 transition-colors mt-4 border-t border-gray-800">
             <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
             <span class="text-sm font-medium">Cerrar Sesión</span>
         </a>

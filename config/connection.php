@@ -1,17 +1,18 @@
-
 <?php
 
-$server = "sql5.freesqldatabase.com";
-$user = "sql5814300";
-$password = "KcRts6F5MF";
-$database = "sql5814300";
-$port = "3306";
+$server = "localhost";
+$user = "root";
+$password = "";
+$database = "iqgym";
+$port = "3307";
 
-$coneccion = mysqli_connect($server, $user, $password, $database, $port);
-if (!$coneccion) {
-    die("Connection failed: " . mysqli_connect_error());
-}else{
-    
+// Cambié $coneccion por $conn para que coincida con el resto del código
+$conn = mysqli_connect($server, $user, $password, $database, $port);
+
+if (!$conn) {
+    die("Error de conexión: " . mysqli_connect_error());
 }
+
+$conn->set_charset("utf8mb4");
 
 ?>

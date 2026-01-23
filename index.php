@@ -1,21 +1,47 @@
 <?php
 session_start();
+require_once 'config/connection.php';
 
+// Verificar si ya hay sesión activa
 if (isset($_SESSION['usuario_id'])) {
     header('Location: dashboard.php');
     exit;
 }
 
+// Variable para errores
+$error = '';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    require_once 'config/connection.php';
-    
     $usuario = trim($_POST['usuario'] ?? '');
     $password = $_POST['password'] ?? '';
     
     if (empty($usuario) || empty($password)) {
         $error = "Usuario y contraseña son obligatorios";
     } else {
-        $stmt = $conn->prepare("SELECT id, nombre, usuario, password, rol, activo FROM usuarios WHERE usuario = ?");
+        // Verificar que $conn existe
+        if (!isset($conn)) {
+            die("Error: No se pudo conectar a la base de datos");
+        }
+        
+        // JOIN con roles para obtener el nombre del rol
+        $stmt = $conn->prepare("
+            SELECT 
+                u.id_usuario, 
+                u.nombre, 
+                u.apellido,
+                u.usuario, 
+                u.password, 
+                u.activo,
+                r.nombre_rol as rol
+            FROM usuarios u
+            INNER JOIN roles r ON u.id_rol = r.id_rol
+            WHERE u.usuario = ?
+        ");
+        
+        if (!$stmt) {
+            die("Error en la consulta: " . $conn->error);
+        }
+        
         $stmt->bind_param("s", $usuario);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -25,9 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             if ($user['activo'] == 0) {
                 $error = "Tu cuenta ha sido desactivada";
-            } elseif (password_verify($password, $user['password'])) {
-                $_SESSION['usuario_id'] = $user['id'];
+            } elseif (md5($password) === $user['password']) {
+                // Regenerar ID de sesión por seguridad
+                session_regenerate_id(true);
+                
+                $_SESSION['usuario_id'] = $user['id_usuario'];
                 $_SESSION['nombre'] = $user['nombre'];
+                $_SESSION['apellido'] = $user['apellido'];
                 $_SESSION['usuario'] = $user['usuario'];
                 $_SESSION['rol'] = $user['rol'];
                 
@@ -57,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     <div class="w-full max-w-md">
         
-        <!-- Logo y título -->
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-2xl shadow-2xl mb-4 transform hover:scale-110 transition-transform">
                 <i class="fa-solid fa-dumbbell text-blue-600 text-3xl"></i>
@@ -66,13 +95,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <p class="text-gray-200 text-lg">Sistema de Gestión de Gimnasio</p>
         </div>
 
-        <!-- Formulario -->
         <div class="bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-gray-700">
             
             <h2 class="text-2xl font-semibold text-white mb-6">Iniciar Sesión</h2>
             
-            <!-- Alertas -->
-            <?php if (isset($error)): ?>
+            <?php if (!empty($error)): ?>
                 <div class="bg-red-500/20 border border-red-500 text-red-200 p-3 mb-4 text-sm rounded-lg">
                     <i class="fa-solid fa-circle-exclamation mr-2"></i>
                     <?php echo htmlspecialchars($error); ?>
@@ -86,9 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             <?php endif; ?>
             
-            <form method="POST" action="dashboard.php" autocomplete="off">
+            <form method="POST" action="" autocomplete="off">
                 
-                <!-- Usuario -->
                 <div class="mb-4">
                     <label for="usuario" class="block text-sm font-medium text-gray-200 mb-2">
                         Usuario
@@ -104,7 +130,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     >
                 </div>
 
-                <!-- Contraseña -->
                 <div class="mb-6">
                     <label for="password" class="block text-sm font-medium text-gray-200 mb-2">
                         Contraseña
@@ -128,7 +153,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
 
-                <!-- Botón -->
                 <button 
                     type="submit"
                     class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-105 shadow-lg"
@@ -138,7 +162,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </form>
         </div>
 
-        <!-- Credenciales de prueba -->
         <div class="mt-6 bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-gray-700">
             <p class="text-sm font-semibold text-white mb-4 flex items-center">
                 <i class="fa-solid fa-key text-orange-500 mr-2"></i>
@@ -152,24 +175,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                     <i class="fa-solid fa-arrow-right text-orange-500"></i>
                 </div>
-                <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition cursor-pointer" onclick="fillCredentials('recepcion', 'recepcion123')">
+                <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition cursor-pointer" onclick="fillCredentials('recepcion', 'recep123')">
                     <div>
                         <p class="text-white font-medium">Recepcionista</p>
-                        <p class="text-gray-400 text-xs mt-0.5">recepcion / recepcion123</p>
+                        <p class="text-gray-400 text-xs mt-0.5">recepcion / recep123</p>
                     </div>
                     <i class="fa-solid fa-arrow-right text-orange-500"></i>
                 </div>
-                <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition cursor-pointer" onclick="fillCredentials('entrenador', 'entrenador123')">
+                <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition cursor-pointer" onclick="fillCredentials('trainer1', 'train123')">
                     <div>
                         <p class="text-white font-medium">Entrenador</p>
-                        <p class="text-gray-400 text-xs mt-0.5">entrenador / entrenador123</p>
+                        <p class="text-gray-400 text-xs mt-0.5">trainer1 / train123</p>
                     </div>
                     <i class="fa-solid fa-arrow-right text-orange-500"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Footer -->
         <footer class="text-center mt-8 text-sm text-gray-300">
             <p>&copy; <?php echo date('Y'); ?> IQGYM. Proyecto Universitario.</p>
         </footer>
