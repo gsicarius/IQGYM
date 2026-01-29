@@ -92,18 +92,43 @@ if ($rol == 'admin') {
     
     <div class="lg:ml-64">
         
-        <?php include 'includes/header.php'; ?>
-        
+        <!-- Header con información de usuario -->
+        <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-10">
+            <div class="flex items-center justify-between px-6 py-4">
+                
+                <!-- Botón menú móvil -->
+                <button id="sidebarToggle" class="lg:hidden text-gray-400 hover:text-white transition">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+
+                <!-- Logo móvil (solo visible en pantallas pequeñas) -->
+                <div class="lg:hidden">
+                    <img src="assets/images/logo.png" alt="IQGYM" class="w-10 h-10 object-contain">
+                </div>
+
+                <!-- Información de usuario -->
+                <div class="ml-auto flex items-center gap-4">
+                    <div class="hidden sm:block text-right">
+                        <p class="text-sm font-medium text-white"><?php echo htmlspecialchars($_SESSION['nombre'] . ' ' . ($_SESSION['apellido'] ?? '')); ?></p>
+                        <p class="text-xs text-gray-400"><?php echo ucfirst($_SESSION['rol']); ?></p>
+                    </div>
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                        <?php echo strtoupper(substr($_SESSION['nombre'], 0, 1)); ?>
+                    </div>
+                </div>
+            </div>
+        </header>
+                
         <main class="p-6">
             
             <!-- Bienvenida -->
             <div class="mb-8">
                 <h1 class="text-3xl font-bold text-white mb-2">
-                    Bienvenido, <?php echo htmlspecialchars($_SESSION['nombre']); ?>
+                    ¡Bienvenido, <?php echo htmlspecialchars($_SESSION['nombre']); ?>!
                 </h1>
                 <p class="text-gray-400">
                     <i class="fa-solid fa-circle text-green-500 text-xs mr-2"></i>
-                    Conectado como <span class="text-blue-400 font-medium"><?php echo ucfirst($_SESSION['rol']); ?></span>
+                    Panel de <span class="text-blue-400 font-medium"><?php echo ucfirst($_SESSION['rol']); ?></span>
                 </p>
             </div>
 
@@ -112,7 +137,7 @@ if ($rol == 'admin') {
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 
                 <!-- Card 1 -->
-                <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 shadow-xl">
+                <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 shadow-xl hover:shadow-2xl transition-shadow">
                     <div class="flex items-center justify-between mb-4">
                         <div class="bg-white/20 rounded-lg p-3">
                             <i class="fa-solid fa-users text-white text-2xl"></i>
@@ -124,7 +149,7 @@ if ($rol == 'admin') {
                 </div>
 
                 <!-- Card 2 -->
-                <div class="bg-gradient-to-br from-green-600 to-green-700 rounded-xl p-6 shadow-xl">
+                <div class="bg-gradient-to-br from-green-600 to-green-700 rounded-xl p-6 shadow-xl hover:shadow-2xl transition-shadow">
                     <div class="flex items-center justify-between mb-4">
                         <div class="bg-white/20 rounded-lg p-3">
                             <i class="fa-solid fa-dollar-sign text-white text-2xl"></i>
@@ -136,7 +161,7 @@ if ($rol == 'admin') {
                 </div>
 
                 <!-- Card 3 -->
-                <div class="bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl p-6 shadow-xl">
+                <div class="bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl p-6 shadow-xl hover:shadow-2xl transition-shadow">
                     <div class="flex items-center justify-between mb-4">
                         <div class="bg-white/20 rounded-lg p-3">
                             <i class="fa-solid fa-clock text-white text-2xl"></i>
@@ -148,7 +173,7 @@ if ($rol == 'admin') {
                 </div>
 
                 <!-- Card 4 -->
-                <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-6 shadow-xl">
+                <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-6 shadow-xl hover:shadow-2xl transition-shadow">
                     <div class="flex items-center justify-between mb-4">
                         <div class="bg-white/20 rounded-lg p-3">
                             <i class="fa-solid fa-tags text-white text-2xl"></i>
@@ -163,7 +188,7 @@ if ($rol == 'admin') {
             <?php elseif ($rol == 'recepcionista'): ?>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 
-                <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 shadow-xl">
+                <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 shadow-xl hover:shadow-2xl transition-shadow">
                     <div class="flex items-center justify-between mb-4">
                         <div class="bg-white/20 rounded-lg p-3">
                             <i class="fa-solid fa-users text-white text-2xl"></i>
@@ -173,7 +198,7 @@ if ($rol == 'admin') {
                     <p class="text-blue-200 text-sm">Clientes Activos</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl p-6 shadow-xl">
+                <div class="bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl p-6 shadow-xl hover:shadow-2xl transition-shadow">
                     <div class="flex items-center justify-between mb-4">
                         <div class="bg-white/20 rounded-lg p-3">
                             <i class="fa-solid fa-exclamation-triangle text-white text-2xl"></i>
@@ -187,7 +212,7 @@ if ($rol == 'admin') {
             <?php elseif ($rol == 'entrenador'): ?>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 
-                <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 shadow-xl">
+                <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 shadow-xl hover:shadow-2xl transition-shadow">
                     <div class="flex items-center justify-between mb-4">
                         <div class="bg-white/20 rounded-lg p-3">
                             <i class="fa-solid fa-users text-white text-2xl"></i>
@@ -197,7 +222,7 @@ if ($rol == 'admin') {
                     <p class="text-blue-200 text-sm">Mis Clientes</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-6 shadow-xl">
+                <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-6 shadow-xl hover:shadow-2xl transition-shadow">
                     <div class="flex items-center justify-between mb-4">
                         <div class="bg-white/20 rounded-lg p-3">
                             <i class="fa-solid fa-calendar-day text-white text-2xl"></i>
@@ -212,32 +237,32 @@ if ($rol == 'admin') {
 
             <!-- Acceso rápido -->
             <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <h2 class="text-xl font-semibold text-white mb-4">
-                    <i class="fa-solid fa-rocket text-orange-500 mr-2"></i>
+                <h2 class="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-rocket text-orange-500"></i>
                     Acceso Rápido
                 </h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     
-                    <a href="clientes/index.php" class="flex flex-col items-center justify-center p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition">
-                        <i class="fa-solid fa-users text-blue-400 text-2xl mb-2"></i>
+                    <a href="client/index.php" class="flex flex-col items-center justify-center p-6 bg-gray-700/50 rounded-lg hover:bg-gray-700 hover:scale-105 transition-all">
+                        <i class="fa-solid fa-users text-blue-400 text-3xl mb-3"></i>
                         <span class="text-white text-sm font-medium">Clientes</span>
                     </a>
 
                     <?php if (in_array($rol, ['admin', 'recepcionista'])): ?>
-                    <a href="pagos/index.php" class="flex flex-col items-center justify-center p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition">
-                        <i class="fa-solid fa-credit-card text-green-400 text-2xl mb-2"></i>
+                    <a href="pagos/index.php" class="flex flex-col items-center justify-center p-6 bg-gray-700/50 rounded-lg hover:bg-gray-700 hover:scale-105 transition-all">
+                        <i class="fa-solid fa-credit-card text-green-400 text-3xl mb-3"></i>
                         <span class="text-white text-sm font-medium">Pagos</span>
                     </a>
                     <?php endif; ?>
 
-                    <a href="agenda/index.php" class="flex flex-col items-center justify-center p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition">
-                        <i class="fa-solid fa-calendar-days text-purple-400 text-2xl mb-2"></i>
+                    <a href="agenda/index.php" class="flex flex-col items-center justify-center p-6 bg-gray-700/50 rounded-lg hover:bg-gray-700 hover:scale-105 transition-all">
+                        <i class="fa-solid fa-calendar-days text-purple-400 text-3xl mb-3"></i>
                         <span class="text-white text-sm font-medium">Agenda</span>
                     </a>
 
                     <?php if ($rol == 'admin'): ?>
-                    <a href="reportes/index.php" class="flex flex-col items-center justify-center p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition">
-                        <i class="fa-solid fa-chart-pie text-orange-400 text-2xl mb-2"></i>
+                    <a href="reportes/index.php" class="flex flex-col items-center justify-center p-6 bg-gray-700/50 rounded-lg hover:bg-gray-700 hover:scale-105 transition-all">
+                        <i class="fa-solid fa-chart-pie text-orange-400 text-3xl mb-3"></i>
                         <span class="text-white text-sm font-medium">Reportes</span>
                     </a>
                     <?php endif; ?>
@@ -247,6 +272,9 @@ if ($rol == 'admin') {
 
         </main>
     </div>
+
+    <!-- Overlay para móviles -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden hidden"></div>
 
     <script src="assets/js/sidebar.js"></script>
 

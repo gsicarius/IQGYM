@@ -14,7 +14,7 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $usuario = trim($_POST['usuario'] ?? '');
     $password = $_POST['password'] ?? '';
-    
+
     if (empty($usuario) || empty($password)) {
         $error = "Usuario y contraseña son obligatorios";
     } else {
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (!isset($conn)) {
             die("Error: No se pudo conectar a la base de datos");
         }
-        
+
         // JOIN con roles para obtener el nombre del rol
         $stmt = $conn->prepare("
             SELECT 
@@ -37,30 +37,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             INNER JOIN roles r ON u.id_rol = r.id_rol
             WHERE u.usuario = ?
         ");
-        
+
         if (!$stmt) {
             die("Error en la consulta: " . $conn->error);
         }
-        
+
         $stmt->bind_param("s", $usuario);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows == 1) {
             $user = $result->fetch_assoc();
-            
+
             if ($user['activo'] == 0) {
                 $error = "Tu cuenta ha sido desactivada";
             } elseif (md5($password) === $user['password']) {
                 // Regenerar ID de sesión por seguridad
                 session_regenerate_id(true);
-                
+
                 $_SESSION['usuario_id'] = $user['id_usuario'];
                 $_SESSION['nombre'] = $user['nombre'];
                 $_SESSION['apellido'] = $user['apellido'];
                 $_SESSION['usuario'] = $user['usuario'];
                 $_SESSION['rol'] = $user['rol'];
-                
+
                 header('Location: dashboard.php');
                 exit;
             } else {
@@ -69,13 +69,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             $error = "Usuario o contraseña incorrectos";
         }
-        
+
         $stmt->close();
     }
 }
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,22 +84,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
-<body class="bg-gradient-to-br from-blue-900 via-gray-900 to-orange-600 min-h-screen flex items-center justify-center p-4">
-    
+
+<body
+    class="bg-gradient-to-br from-blue-900 via-gray-900 to-orange-600 min-h-screen flex items-center justify-center p-4">
+
     <div class="w-full max-w-md">
-        
+
+        <!-- Logo -->
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-2xl shadow-2xl mb-4 transform hover:scale-110 transition-transform">
-                <i class="fa-solid fa-dumbbell text-blue-600 text-3xl"></i>
+            <div class="inline-block mb-4">
+                <img src="assets/images/logo.png" alt="IQGYM Logo" class="w-40 h-40 object-contain drop-shadow-2xl">
             </div>
-            <h1 class="text-5xl font-bold text-white mb-2 drop-shadow-lg">IQGYM</h1>
             <p class="text-gray-200 text-lg">Sistema de Gestión de Gimnasio</p>
         </div>
-
         <div class="bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-gray-700">
-            
+
             <h2 class="text-2xl font-semibold text-white mb-6">Iniciar Sesión</h2>
-            
+
             <?php if (!empty($error)): ?>
                 <div class="bg-red-500/20 border border-red-500 text-red-200 p-3 mb-4 text-sm rounded-lg">
                     <i class="fa-solid fa-circle-exclamation mr-2"></i>
@@ -112,22 +114,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <?php echo htmlspecialchars($_GET['msg']); ?>
                 </div>
             <?php endif; ?>
-            
+
             <form method="POST" action="" autocomplete="off">
-                
+
                 <div class="mb-4">
                     <label for="usuario" class="block text-sm font-medium text-gray-200 mb-2">
                         Usuario
                     </label>
-                    <input 
-                        type="text" 
-                        id="usuario" 
-                        name="usuario" 
-                        autocomplete="off"
-                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                        required
-                        autofocus
-                    >
+                    <input type="text" id="usuario" name="usuario" autocomplete="off"
+                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg 
+                        text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                        focus:border-transparent transition"
+                        required autofocus>
                 </div>
 
                 <div class="mb-6">
@@ -135,28 +133,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         Contraseña
                     </label>
                     <div class="relative">
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            autocomplete="off"
-                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                            required
-                        >
-                        <button 
-                            type="button" 
-                            onclick="togglePassword()" 
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
-                        >
+                        <input type="password" id="password" name="password" autocomplete="off"
+                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg 
+                            text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                            focus:border-transparent transition"
+                            required>
+                        <button type="button" onclick="togglePassword()"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition">
                             <i id="toggleIcon" class="fa-solid fa-eye"></i>
                         </button>
                     </div>
                 </div>
 
-                <button 
-                    type="submit"
-                    class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-105 shadow-lg"
-                >
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 
+                    text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-105 shadow-lg">
                     Ingresar
                 </button>
             </form>
@@ -168,21 +159,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 Credenciales de prueba
             </p>
             <div class="space-y-3 text-sm">
-                <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition cursor-pointer" onclick="fillCredentials('admin', 'admin123')">
+                <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 
+                transition cursor-pointer"
+                    onclick="fillCredentials('admin', 'admin123')">
                     <div>
                         <p class="text-white font-medium">Administrador</p>
                         <p class="text-gray-400 text-xs mt-0.5">admin / admin123</p>
                     </div>
                     <i class="fa-solid fa-arrow-right text-orange-500"></i>
                 </div>
-                <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition cursor-pointer" onclick="fillCredentials('recepcion', 'recep123')">
+                <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 
+                transition cursor-pointer"
+                    onclick="fillCredentials('recepcion', 'recep123')">
                     <div>
                         <p class="text-white font-medium">Recepcionista</p>
                         <p class="text-gray-400 text-xs mt-0.5">recepcion / recep123</p>
                     </div>
                     <i class="fa-solid fa-arrow-right text-orange-500"></i>
                 </div>
-                <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition cursor-pointer" onclick="fillCredentials('trainer1', 'train123')">
+                <div class="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 
+                transition cursor-pointer"
+                    onclick="fillCredentials('trainer1', 'train123')">
                     <div>
                         <p class="text-white font-medium">Entrenador</p>
                         <p class="text-gray-400 text-xs mt-0.5">trainer1 / train123</p>
@@ -201,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         function togglePassword() {
             const input = document.getElementById('password');
             const icon = document.getElementById('toggleIcon');
-            
+
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.classList.replace('fa-eye', 'fa-eye-slash');
@@ -218,4 +215,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </script>
 
 </body>
+
 </html>
