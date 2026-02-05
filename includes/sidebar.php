@@ -44,7 +44,7 @@ $ruta_actual = $_SERVER['PHP_SELF'];
     <nav class="flex-1 overflow-y-auto py-4">
         
         <!-- Dashboard - TODOS -->
-        <a href="<?php echo $base; ?>/dashboard.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo $pagina_actual == 'dashboard.php' ? 'bg-blue-600/20 text-white border-l-4 border-blue-500' : ''; ?>">
+        <a href="<?php echo $base; ?>/dashboard.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo $pagina_actual == 'dashboard.php' ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''; ?>">
             <i class="fa-solid fa-chart-line w-5 text-center"></i>
             <span class="text-sm font-medium">Dashboard</span>
         </a>
@@ -58,14 +58,14 @@ $ruta_actual = $_SERVER['PHP_SELF'];
         <?php endif; ?>
 
         <!-- Clientes - TODOS -->
-        <a href="<?php echo $base; ?>/client/index.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/client/') !== false ? 'bg-blue-600/20 text-white border-l-4 border-blue-500' : ''; ?>">
+        <a href="<?php echo $base; ?>/client/index.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/client/') !== false ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''; ?>">
             <i class="fa-solid fa-users w-5 text-center"></i>
             <span class="text-sm font-medium">Clientes</span>
         </a>
 
         <!-- Pagos - Admin y Recepcionista -->
         <?php if (in_array($_SESSION['rol'], ['admin', 'recepcionista'])): ?>
-        <a href="<?php echo $base; ?>/pagos/index.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/pagos/') !== false ? 'bg-blue-600/20 text-white border-l-4 border-blue-500' : ''; ?>">
+        <a href="<?php echo $base; ?>/pagos/index.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/pagos/') !== false ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''; ?>">
             <i class="fa-solid fa-credit-card w-5 text-center"></i>
             <span class="text-sm font-medium">Pagos</span>
         </a>
@@ -73,21 +73,21 @@ $ruta_actual = $_SERVER['PHP_SELF'];
 
         <!-- Planes - Admin y Recepcionista -->
         <?php if (in_array($_SESSION['rol'], ['admin', 'recepcionista'])): ?>
-        <a href="<?php echo $base; ?>/planes/index.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/planes/') !== false ? 'bg-blue-600/20 text-white border-l-4 border-blue-500' : ''; ?>">
+        <a href="<?php echo $base; ?>/planes/index.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/planes/') !== false ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''; ?>">
             <i class="fa-solid fa-tags w-5 text-center"></i>
             <span class="text-sm font-medium">Planes</span>
         </a>
         <?php endif; ?>
 
         <!-- Agenda - TODOS -->
-        <a href="<?php echo $base; ?>/agenda/index.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/agenda/') !== false ? 'bg-blue-600/20 text-white border-l-4 border-blue-500' : ''; ?>">
+        <a href="<?php echo $base; ?>/agenda/index.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/agenda/') !== false ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''; ?>">
             <i class="fa-solid fa-calendar-days w-5 text-center"></i>
             <span class="text-sm font-medium">Agenda</span>
         </a>
 
         <!-- Reportes - SOLO ADMIN -->
         <?php if ($_SESSION['rol'] == 'admin'): ?>
-        <a href="<?php echo $base; ?>/reportes/index.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/reportes/') !== false ? 'bg-blue-600/20 text-white border-l-4 border-blue-500' : ''; ?>">
+        <a href="<?php echo $base; ?>/reportes/index.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/reportes/') !== false ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''; ?>">
             <i class="fa-solid fa-chart-pie w-5 text-center"></i>
             <span class="text-sm font-medium">Reportes</span>
         </a>
@@ -98,7 +98,7 @@ $ruta_actual = $_SERVER['PHP_SELF'];
 
         <!-- Configuración - SOLO ADMIN -->
         <?php if ($_SESSION['rol'] == 'admin'): ?>
-        <a href="<?php echo $base; ?>#" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/configuracion/') !== false ? 'bg-blue-600/20 text-white border-l-4 border-blue-500' : ''; ?>">
+        <a href="<?php echo $base; ?>/config/config.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/config/') !== false ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''; ?>">
             <i class="fa-solid fa-gear w-5 text-center"></i>
             <span class="text-sm font-medium">Configuración</span>
         </a>
