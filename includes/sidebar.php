@@ -93,16 +93,6 @@ $ruta_actual = $_SERVER['PHP_SELF'];
         </a>
         <?php endif; ?>
 
-        <!-- Separador -->
-        <div class="h-px bg-gray-800 mx-6 my-4"></div>
-
-        <!-- Configuración - SOLO ADMIN -->
-        <?php if ($_SESSION['rol'] == 'admin'): ?>
-        <a href="<?php echo $base; ?>/config/config.php" class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/config/') !== false ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''; ?>">
-            <i class="fa-solid fa-gear w-5 text-center"></i>
-            <span class="text-sm font-medium">Configuración</span>
-        </a>
-        <?php endif; ?>
 
         <!-- Cerrar Sesión -->
         <a href="<?php echo $base; ?>/logout.php" class="flex items-center gap-3 px-6 py-3 text-red-400 hover:bg-red-900/20 hover:text-red-300 transition-colors mt-4 border-t border-gray-800">
