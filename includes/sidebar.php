@@ -116,6 +116,6 @@ $ruta_actual = $_SERVER['PHP_SELF'];
 <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
 
 <!-- Botón toggle para móviles -->
-<button id="sidebarToggle" class="fixed top-4 left-4 z-50 lg:hidden bg-gray-900 text-white p-3 rounded-lg shadow-lg hover:bg-gray-800 transition-colors">
+<button id="sidebarToggle" class="fixed top-4 left-4 z-50 lg:hidden bg-gray-700 text-white p-3 rounded-lg shadow-lg hover:bg-gray-800 transition-colors">
     <i class="fa-solid fa-bars text-xl"></i>
 </button>

@@ -2,7 +2,7 @@
 
 $server = "localhost";
 $user = "root";
-$password = "";
+$password = "123";
 $database = "iqgym";
 $port = "3307";
 
