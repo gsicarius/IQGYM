@@ -204,15 +204,15 @@ while ($row = mysqli_fetch_assoc($res))
                             : 'Registrar Pago' ?>
                     </h2>
 
-                    
+
 
                     <form method="POST" action="index.php">
                         <div class="flex  gap-6 items-center">
 
-                        <div class="flex flex-col items-center justify-center min-w-[160px]">
-                        <img src="../assets/IMAGES/logo.png" alt="FotoCliente"
-                            class="w-40 h-40 object-contain drop-shadow-2xl">
-                        </div>
+                            <div class="flex flex-col items-center justify-center min-w-[160px]">
+                                <img src="../assets/IMAGES/logo.png" alt="FotoCliente"
+                                    class="w-40 h-40 object-contain drop-shadow-2xl">
+                            </div>
                             <div class="flex gap-4 w-full max-w-2xl mb-4">
                                 <div class="flex-1">
                                     <h3 class="mb-2 text-white">Nombre:</h3>
@@ -243,18 +243,18 @@ while ($row = mysqli_fetch_assoc($res))
 
                                 <div class="flex-1 mt-2">
                                     <h3 class="mb-2 text-white">fecha_vencimiento:</h3>
-                                    
+
                                     <?php if ($cliente_seleccionado && $cliente_seleccionado['fecha_vencimiento']): ?>
-                                                    <?php
-                                                    $dias_restantes = floor((strtotime($c['fecha_vencimiento']) - time()) / 86400);
-                                                    $color = $dias_restantes < 0 ? 'text-red-400' : ($dias_restantes <= 7 ? 'text-yellow-400' : 'text-gray-300');
-                                                    ?>
-                                                    <span class="<?= $color ?>">
-                                                        <?= date('d/m/Y', strtotime($c['fecha_vencimiento'])) ?>
-                                                    </span>
-                                                <?php else: ?>
-                                                    <span class="text-gray-500">Sin plan</span>
-                                                <?php endif; ?>
+                                        <?php
+                                        $dias_restantes = floor((strtotime($c['fecha_vencimiento']) - time()) / 86400);
+                                        $color = $dias_restantes < 0 ? 'text-red-400' : ($dias_restantes <= 7 ? 'text-yellow-400' : 'text-gray-300');
+                                        ?>
+                                        <span class="<?= $color ?>">
+                                            <?= date('d/m/Y', strtotime($c['fecha_vencimiento'])) ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="text-gray-500">Sin plan</span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <input type="hidden" name="idActual" value="<?= $cliente_seleccionado['id_cliente'] ?? '' ?>">
@@ -265,7 +265,8 @@ while ($row = mysqli_fetch_assoc($res))
                                         focus:border-transparent transition mb-3">
                                 <option value="">Seleccionar Plan</option>
                                 <?php foreach ($planes as $plan): ?>
-                                    <option value="<?= $plan['id_plan'] ?>" <?= ($cliente_seleccionado['id_plan'] == $plan['id_plan']) ? 'selected' : '' ?>>
+                                    <option value="<?= $plan['id_plan'] ?>"
+                                        <?= ($cliente_seleccionado['id_plan'] == $plan['id_plan']) ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($plan['nombre']) ?> - $<?= number_format($plan['precio'], 2) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -273,15 +274,51 @@ while ($row = mysqli_fetch_assoc($res))
                         </div>
                         <!-- FORMATO PARA PAGOS -->
                         <div>
+                            <h2 class="text-center">Total a Pagar: $<?= number_format($total_a_pagar, 2) ?></h2>
                             <select name="formato_pago" id="formato_pago" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg 
                                         text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
                                         focus:border-transparent transition">
-                                        <option value="opciones">Metodo de pago</option>
-                                    <option value="tarjetaC">Tarjeta de Crédito</option>
-                                    <option value="tarjetaD">Tarjeta de Débito</option>
-                                    <option value="efectivo">Efectivo</option>
+                                <option value="opciones">Metodo de pago</option>
+                                <option value="tarjetaC">Tarjeta de Crédito</option>
+                                <option value="tarjetaD">Tarjeta de Débito</option>
+                                <option value="efectivo">Efectivo</option>
                             </select>
-                            
+                            <div id="credito" class="mt-3">
+                                <input type="number" name="NumeroTarjeta" id="NumeroTarjeta"
+                                    value="<?= htmlspecialchars($cliente_seleccionado['numero_tarjeta'] ?? '') ?>" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg 
+                                        text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                                        focus:border-transparent transition" placeholder="Numero de la tarjeta"
+                                    required>
+                                <div class="flex mt-3">
+                                    <input type="number" name="CVV" id="CVV" value="" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg 
+                                        text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                                        focus:border-transparent transition mr-2" placeholder="CVV" required>
+                                    <input type="date" name="FechaVencimiento" id="FechaVencimiento" value="" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg 
+                                        text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                                        focus:border-transparent transition" placeholder="Fecha de Vencimiento (MM/AA)"
+                                        required>
+                                </div>
+                            </div>
+                                <div id="efectivo">
+                                    <label for="" class="text-semibold text-white ">Ingreso:</label>
+                                    <input type="number" name="TotalIngreso" id="TotalIngreso" value="" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg 
+                                        text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                                        focus:border-transparent transition" placeholder="Total Ingresado"
+                                        required>
+                                    <p>Cambio: $<span id="cambio">0.00</span></p>
+                            </div>
+
+                                <div class="flex justify-center mt-4">
+                                    <button type="submit" name="accion" value="procesar_pago" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 
+                                        text-white font-semibold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-lg">
+                                        <i class="fa-solid fa-save mr-2"></i>
+                                        Procesar Pago
+                                    </button>
+                                </div>
+
+                                <script>
+                                    
+                                </script>
                         </div>
                     </form>
                 </section>
@@ -289,7 +326,8 @@ while ($row = mysqli_fetch_assoc($res))
         </main>
     </div>
 
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden hidden"></div>
+    <div id=" sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden hidden">
+    </div>
     <script src="../assets/js/sidebar.js"></script>
 </body>
 
