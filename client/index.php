@@ -7,11 +7,11 @@ $mostrar_formulario = false;
 $cliente_seleccionado = null;
 
 // ── Actualizar estatus automáticamente según fecha de vencimiento ─────────────
-mysqli_query($conn, "
+mysqli_query(mysql: $conn, query: "
     UPDATE clientes 
     SET estatus='inactivo' 
     WHERE fecha_vencimiento < CURDATE() 
-      AND estatus='activo'
+    AND estatus='activo'
 ");
 
 // ── Procesar formulario POST ──────────────────────────────────────────────────
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mensaje = '✗ Selecciona un cliente para eliminar';
         }
 
-    // ── Guardar (insertar o actualizar) ───────────────────────────────────────
+        // ── Guardar (insertar o actualizar) ───────────────────────────────────────
     } else {
         if (!$nombre || !$apellido || !$email || !$telefono) {
             $mensaje = '✗ Todos los campos son obligatorios';
@@ -105,6 +105,7 @@ while ($row = mysqli_fetch_assoc($res)) $clientes[] = $row;
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -127,7 +128,7 @@ while ($row = mysqli_fetch_assoc($res)) $clientes[] = $row;
 
             <?php if ($mensaje): ?>
                 <div class="mb-4 px-4 py-3 rounded-lg text-sm font-semibold max-w-6xl mx-auto
-                    <?= str_starts_with($mensaje,'✓') ? 'bg-green-700 text-green-100' : 'bg-red-700 text-red-100' ?>">
+                    <?= str_starts_with($mensaje, '✓') ? 'bg-green-700 text-green-100' : 'bg-red-700 text-red-100' ?>">
                     <?= htmlspecialchars($mensaje) ?>
                 </div>
             <?php endif; ?>
@@ -141,12 +142,12 @@ while ($row = mysqli_fetch_assoc($res)) $clientes[] = $row;
                         <h2 class="text-white text-xl font-semibold">
                             <i class="fa-solid fa-users mr-2"></i> Clientes Registrados
                         </h2>
-                        
+
                         <!-- Barra de búsqueda -->
                         <div class="flex gap-3 w-full md:w-auto">
                             <form method="GET" class="flex gap-2 flex-1 md:flex-initial">
                                 <div class="relative flex-1 md:w-64">
-                                    <input type="text" name="buscar" 
+                                    <input type="text" name="buscar"
                                         value="<?= htmlspecialchars($busqueda) ?>"
                                         placeholder="Buscar por nombre, teléfono o email..."
                                         class="w-full px-4 py-2 pl-10 bg-gray-700 border border-gray-600 rounded-lg 
@@ -194,7 +195,7 @@ while ($row = mysqli_fetch_assoc($res)) $clientes[] = $row;
                                             <td class="px-4 py-3"><?= $c['id_cliente'] ?></td>
                                             <td class="px-4 py-3">
                                                 <a href="?id=<?= $c['id_cliente'] ?>" class="text-blue-400 hover:text-blue-300 hover:underline">
-                                                    <?= htmlspecialchars($c['nombre'].' '.$c['apellido']) ?>
+                                                    <?= htmlspecialchars($c['nombre'] . ' ' . $c['apellido']) ?>
                                                 </a>
                                             </td>
                                             <td class="px-4 py-3"><?= htmlspecialchars($c['telefono']) ?></td>
@@ -234,9 +235,9 @@ while ($row = mysqli_fetch_assoc($res)) $clientes[] = $row;
                     </div>
                 </section>
 
-            <!-- ═══════════════════════════════════════════════════════════════════ -->
-            <!-- FORMULARIO DE EDICIÓN/CREACIÓN -->
-            <!-- ═══════════════════════════════════════════════════════════════════ -->
+                <!-- ═══════════════════════════════════════════════════════════════════ -->
+                <!-- FORMULARIO DE EDICIÓN/CREACIÓN -->
+                <!-- ═══════════════════════════════════════════════════════════════════ -->
             <?php else: ?>
                 <section class="bg-gray-800 rounded-lg p-6 max-w-4xl mx-auto">
                     <div class="mb-4">
@@ -336,4 +337,5 @@ while ($row = mysqli_fetch_assoc($res)) $clientes[] = $row;
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden hidden"></div>
     <script src="../assets/js/sidebar.js"></script>
 </body>
+
 </html>
