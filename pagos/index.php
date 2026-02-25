@@ -274,7 +274,10 @@ while ($row = mysqli_fetch_assoc($res))
                         </div>
                         <!-- FORMATO PARA PAGOS -->
                         <div>
-                            <h2 class="text-center">Total a Pagar: $<?= number_format($total_a_pagar, 2) ?></h2>
+                            <h2 class="text-center">
+                                Total a Pagar: $<?= number_format($plan['costo'], 2) ?>
+                            </h2>
+
                             <select name="formato_pago" id="formato_pago" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg 
                                         text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
                                         focus:border-transparent transition">
@@ -283,6 +286,7 @@ while ($row = mysqli_fetch_assoc($res))
                                 <option value="tarjetaD">Tarjeta de Débito</option>
                                 <option value="efectivo">Efectivo</option>
                             </select>
+                            <div id="formulario_pago">
                             <div id="credito" class="mt-3">
                                 <input type="number" name="NumeroTarjeta" id="NumeroTarjeta"
                                     value="<?= htmlspecialchars($cliente_seleccionado['numero_tarjeta'] ?? '') ?>" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg 
@@ -305,7 +309,7 @@ while ($row = mysqli_fetch_assoc($res))
                                         text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
                                         focus:border-transparent transition" placeholder="Total Ingresado"
                                         required>
-                                    <p>Cambio: $<span id="cambio">0.00</span></p>
+                                    <p class="text-white text-semibold">Cambio: $<span id="cambio">0.00</span></p>
                             </div>
 
                                 <div class="flex justify-center mt-4">
@@ -315,9 +319,34 @@ while ($row = mysqli_fetch_assoc($res))
                                         Procesar Pago
                                     </button>
                                 </div>
+                                
 
                                 <script>
+                                    const credito = document.getElementById('credito')
+                                    const debito = documnet.getElementById('debito')
+                                    const efectivo = documnet.getElementById('efectivo')
+                                    const metodos_pago = document.getElementById('formato_pago')
+                                    const formulario_pago = document.getElementById('formulario_pago')
                                     
+                                    function mostrarFormularioPago(opc){
+                                    formulario_pago.add('hidden')
+                                    credito.classList.add('hidden')
+                                    efectivo.classList.add('hidden')
+                                    
+                                        if(opc === 'opciones'){
+                                            formulario_pago.classList.remove('hidden')
+                                        }else if(opc === 'tarjetaC' || opc ===  'tarjetaD'){
+                                            efectivo.classList.remove('hidden')
+                                        }else if( opc === 'efectivo'){
+                                            credito.classList.remove('hidden')
+                                        }
+                                    }
+
+                                    merodos_pago.addEventListener('change',function(){
+                                        
+                                        mostrarFormularioPago(metodos_pago.value)
+                                    })
+
                                 </script>
                         </div>
                     </form>
