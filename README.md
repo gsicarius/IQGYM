@@ -1,101 +1,103 @@
-# IQGYM — Sistema de Gestión de Gimnasios
+# IQGYM — Gym Management System
 
-**IQGYM** es una aplicación web desarrollada en PHP para la gestión integral de gimnasios. Permite administrar clientes, planes, pagos, agenda de clases y generar reportes desde un panel centralizado.
+IQGYM is a modular web-based gym management system built with PHP and MySQL. It centralizes client administration, membership management, payment processing, scheduling, and reporting within a secure administrative dashboard.
 
----
-
-## Tabla de Contenidos
-
-- [Características](#características)
-- [Estructura del Proyecto](#estructura-del-proyecto)
-- [Requisitos](#requisitos)
-- [Instalación](#instalación)
-- [Uso](#uso)
-- [Módulos](#módulos)
-- [Contribución](#contribución)
-- [Licencia](#licencia)
+The system is structured with modular separation of concerns and role-based access control, making it suitable for small-to-medium fitness centers.
 
 ---
 
-## Características
+## Core Capabilities
 
-- Gestión completa de clientes y usuarios
-- Agenda de clases y actividades
-- Control de pagos y facturación
-- Administración de planes y membresías
-- Reportes y estadísticas
-- Sistema de autenticación y control de acceso
-- Interfaz web responsive
+- **Client lifecycle management** — create, update, deactivate
+- **Membership and plan administration**
+- **Payment tracking and revenue monitoring**
+- **Class and activity scheduling**
+- **Role-based authentication and authorization**
+- **Administrative dashboard with operational metrics**
+- **Responsive user interface**
 
 ---
 
-## Estructura del Proyecto
+## Architecture Overview
+
+IQGYM follows a modular directory-based architecture to improve maintainability and scalability:
 
 ```
 IQGYM/
-├── agenda/          # Módulo de agenda y clases
-├── assets/          # Recursos estáticos (CSS, imágenes, JS)
-├── client/          # Gestión de clientes
-├── config/          # Configuración de base de datos y entorno
-├── includes/        # Archivos reutilizables (header, footer, etc.)
-├── pagos/           # Módulo de pagos y facturación
-├── planes/          # Gestión de planes y membresías
-├── reportes/        # Generación de reportes
-├── usuarios/        # Gestión de usuarios y roles
-├── dashboard.php    # Panel de control principal
-├── index.php        # Página de inicio / login
-└── logout.php       # Cierre de sesión
+├── agenda/          # Scheduling and class management module
+├── assets/          # Static assets (CSS, JS, images)
+├── client/          # Client management logic and views
+├── config/          # Environment and database configuration
+├── includes/        # Shared layout components
+├── pagos/           # Payment and billing processing
+├── planes/          # Membership and plan management
+├── reportes/        # Reporting and data aggregation
+├── usuarios/        # User management and access control
+├── dashboard.php    # Central administrative panel
+├── index.php        # Authentication entry point
+└── logout.php       # Session termination
 ```
 
----
+### Architectural Principles
 
-## Requisitos
-
-- PHP >= 7.4
-- MySQL >= 5.7 o MariaDB
-- Servidor web: Apache o Nginx
-- Extensiones PHP: `pdo`, `pdo_mysql`, `mysqli`, `session`
-
-> Recomendado: usar [XAMPP](https://www.apachefriends.org/) o [WAMP](https://www.wampserver.com/) para desarrollo local.
+- Modular feature isolation
+- Clear separation between configuration, business logic, and presentation
+- Session-based authentication
+- PDO-based database interaction
+- Structured server-side validation
 
 ---
 
-## Instalación
+## Technology Stack
 
-1. **Clona el repositorio:**
+| Layer | Technology |
+|---|---|
+| Backend | PHP 7.4+ |
+| Database | MySQL 5.7+ or MariaDB |
+| Web Server | Apache or Nginx |
+| PHP Extensions | PDO, PDO_MySQL, MySQLi, Sessions |
+| Frontend | HTML5, CSS3, JavaScript |
+
+**Recommended local development environments:** XAMPP, WAMP
+
+---
+
+## Installation
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/gsicarius/IQGYM.git
 cd IQGYM
 ```
 
-2. **Copia los archivos al directorio raíz de tu servidor:**
+### 2. Deploy to your local server
 
 ```bash
-# En XAMPP:
+# Example for XAMPP
 cp -r IQGYM/ /xampp/htdocs/IQGYM
 ```
 
-3. **Crea la base de datos:**
+### 3. Database Setup
 
-Importa el archivo SQL incluido (si existe) desde phpMyAdmin o por terminal:
+Import the provided SQL schema (if available):
 
 ```bash
 mysql -u root -p < database.sql
 ```
 
-4. **Configura la conexión a la base de datos:**
+### 4. Configure Database Credentials
 
-Edita el archivo `config/` con tus credenciales:
+Update the configuration file inside `/config/`:
 
 ```php
 define('DB_HOST', 'localhost');
-define('DB_USER', 'tu_usuario');
-define('DB_PASS', 'tu_contraseña');
+define('DB_USER', 'your_user');
+define('DB_PASS', 'your_password');
 define('DB_NAME', 'iqgym');
 ```
 
-5. **Accede desde el navegador:**
+### 5. Access the Application
 
 ```
 http://localhost/IQGYM/
@@ -103,32 +105,28 @@ http://localhost/IQGYM/
 
 ---
 
-## Uso
+## System Modules
 
-Una vez instalado, accede con tus credenciales de administrador. Desde el **dashboard** podrás navegar a cada módulo del sistema para registrar y administrar clientes, crear y asignar planes de membresía, registrar pagos, gestionar la agenda de clases y consultar reportes de actividad.
-
----
-
-## Módulos
-
-| Módulo | Descripción |
-|--------|-------------|
-| `client/` | Alta, baja y modificación de clientes |
-| `agenda/` | Programación de clases y actividades |
-| `pagos/` | Registro y seguimiento de pagos |
-| `planes/` | Creación y asignación de planes/membresías |
-| `reportes/` | Reportes de ingresos, clientes y actividad |
-| `usuarios/` | Gestión de usuarios con roles y permisos |
+| Module | Responsibility |
+|---|---|
+| **Client** | Full client lifecycle management |
+| **Agenda** | Class and activity scheduling |
+| **Payments** | Payment registration and revenue tracking |
+| **Plans** | Membership configuration and assignment |
+| **Reports** | Income, activity, and client analytics |
+| **Users** | Role-based user management |
 
 ---
 
-## Contribución
+## Security Considerations
 
-Las contribuciones son bienvenidas. Si deseas mejorar el proyecto:
+- Session-based authentication
+- Role-restricted route access
+- PDO-based database abstraction
+- Server-side input validation
 
-1. Haz un fork del repositorio
-2. Crea una rama: `git checkout -b feature/nueva-funcionalidad`
-3. Realiza tus cambios y haz commit: `git commit -m "Agrega nueva funcionalidad"`
-4. Sube los cambios: `git push origin feature/nueva-funcionalidad`
-5. Abre un Pull Request
+---
 
+## Project Objective
+
+IQGYM was developed to simulate a real-world administrative system with modular organization, relational database integration, and access control mechanisms. The goal is to reflect practical backend development principles, system organization, and production-oriented structure.
