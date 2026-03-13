@@ -13,7 +13,14 @@ session_start();
 </head>
 <body class="bg-gray-900">
     <?php include '../includes/sidebar.php'; ?>
-    <div class="lg:ml-64 p-6 text-white">hola</div>
+
+
+    
+
+
+
+
+
 
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden hidden"></div>
     <script src="../assets/js/sidebar.js"></script>
