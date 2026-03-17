@@ -15,8 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $descripcion = trim($_POST['txtdescripcion'] ?? '');
     $precio = (float) ($_POST['precio'] ?? 0);
     $duracion = (int) ($_POST['txtduracion'] ?? 0);
-    $activo = isset($_POST['chkactivo']) ? 1 : 0;
-
+    $activo = (int) ($_POST['chkactivo'] ?? 0);
     // ── Eliminar ──────────────────────────────────────────────────────────────
     if (isset($_POST['accion']) && $_POST['accion'] === 'eliminar') {
         if ($id) {
@@ -35,16 +34,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mostrar_formulario = true;
         } else {
             if ($id) {
-                $stmt = mysqli_prepare($conn, "UPDATE planes SET nombre=?,descripcion$descripcion=?,precio$precio=?,duracion$duracion=? WHERE id_plan=?");
-                mysqli_stmt_bind_param($stmt, 'ssssi', $nombre, $descripcion, $precio, $duracion, $id);
+                $stmt = mysqli_prepare($conn, "UPDATE planes SET nombre_plan=?, descripcion=?, precio=?, duracion_dias=?, activo=?, ultima_modificacion=NOW() WHERE id_plan=?");
+                mysqli_stmt_bind_param($stmt, 'ssdiii', $nombre, $descripcion, $precio, $duracion, $activo, $id);
                 mysqli_stmt_execute($stmt);
-                $mensaje = '✓ plan actualizado correctamente';
+                $mensaje = '✓ Plan actualizado correctamente';
             } else {
-                // Nuevo plan: estatus inactivo por defecto (se activará al registrar pago)
-                $stmt = mysqli_prepare($conn, "INSERT INTO planes(nombre,descripcion$descripcion,precio$precio,duracion$duracion,estatus,fecha_registro) VALUES(?,?,?,?,'inactivo',NOW())");
-                mysqli_stmt_bind_param($stmt, 'ssss', $nombre, $descripcion, $precio, $duracion);
+                $stmt = mysqli_prepare($conn, "INSERT INTO planes (nombre_plan, descripcion, precio, duracion_dias, activo, fecha_creacion, ultima_modificacion) VALUES (?, ?, ?, ?, 0, NOW(), NOW())");
+                mysqli_stmt_bind_param($stmt, 'ssdi', $nombre, $descripcion, $precio, $duracion);
                 mysqli_stmt_execute($stmt);
-                $mensaje = '✓ plan creado correctamente';
+                $mensaje = '✓ Plan creado correctamente';
             }
         }
     }
@@ -121,49 +119,50 @@ while ($row = mysqli_fetch_assoc($res)) {
                         <div class="overflow-x-auto">
                             <?php if (count($planes) > 0): ?>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <?php foreach ($planes as $c): ?>
-                                <?php
-                                $bg_color = $c['activo'] == 1 ? 'bg-green-600' : 'bg-red-600';
-                                $label    = $c['activo'] == 1 ? 'activo' : 'inactivo';
-                                ?>
-                                <div class="bg-gray-700 border border-gray-600 rounded-xl p-5 hover:border-gray-400 transition">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <span class="text-xs text-gray-400">#<?= $c['id_plan'] ?></span>
-                                        <span class="px-2 py-1 <?= $bg_color ?> text-white text-xs rounded uppercase">
-                                            
-                                        </span>
-                                    </div>
-                                    <a href="?id=<?= $c['id_plan'] ?>"
-                                        class="block text-blue-400 hover:text-blue-300 hover:underline font-semibold text-4xl mb-1">
-                                        <?= htmlspecialchars($c['nombre_plan']) ?>
-                                    </a>
-                                    <p class="text-gray-400 text-sm mb-4"><?= htmlspecialchars($c['descripcion']) ?></p>
-                                    <div class="space-y-2 text-sm text-gray-300">
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-500">Duración</span>
-                                            <span><?= $c['duracion_dias'] ?> días</span>
+                                    <?php foreach ($planes as $c): ?>
+                                        <?php
+                                        $bg_color = $c['activo'] == 1 ? 'bg-green-600' : 'bg-red-600';
+                                        $label = $c['activo'] == 1 ? 'activo' : 'inactivo';
+                                        ?>
+                                        <div
+                                            class="bg-gray-700 border border-gray-600 rounded-xl p-5 hover:border-gray-400 transition">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <span class="text-xs text-gray-400">#<?= $c['id_plan'] ?></span>
+                                                <span class="px-2 py-1 <?= $bg_color ?> text-white text-xs rounded uppercase">
+
+                                                </span>
+                                            </div>
+                                            <a href="?id=<?= $c['id_plan'] ?>"
+                                                class="block text-blue-400 hover:text-blue-300 hover:underline font-semibold text-4xl mb-1">
+                                                <?= htmlspecialchars($c['nombre_plan']) ?>
+                                            </a>
+                                            <p class="text-gray-400 text-sm mb-4"><?= htmlspecialchars($c['descripcion']) ?></p>
+                                            <div class="space-y-2 text-sm text-gray-300">
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-500">Duración</span>
+                                                    <span><?= $c['duracion_dias'] ?> días</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-500">Precio</span>
+                                                    <span>$<?= number_format($c['precio'], 2) ?></span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-500">Creacion</span>
+                                                    <span><?= date('d/m/Y H:i', strtotime($c['fecha_creacion'])) ?></span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-500">Modificado</span>
+                                                    <span><?= date('d/m/Y H:i', strtotime($c['ultima_modificacion'])) ?></span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-500">Precio</span>
-                                            <span>$<?= number_format($c['precio'], 2) ?></span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-500">Creacion</span>
-                                            <span><?= date('d/m/Y H:i', strtotime($c['fecha_creacion'])) ?></span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-500">Modificado</span>
-                                            <span><?= date('d/m/Y H:i', strtotime($c['ultima_modificacion'])) ?></span>
-                                        </div>
-                                    </div>
+                                    <?php endforeach; ?>
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
                             <?php else: ?>
-                        <div class="py-8 text-center text-gray-400">
-                            No hay planes registrados aún
-                        </div>
-                    <?php endif; ?>
+                                <div class="py-8 text-center text-gray-400">
+                                    No hay planes registrados aún
+                                </div>
+                            <?php endif; ?>
                         </div>
                 </section>
 
