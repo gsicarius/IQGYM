@@ -7,6 +7,58 @@ $mensaje = '';
 $mostrar_formulario = false;
 $cliente_seleccionado = null;
 
+// ── Procesar pago POST ───────────────────────────────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'procesar_pago') {
+    $id_cliente = (int)($_POST['idActual'] ?? 0);
+    $plan_id = (int)($_POST['plan'] ?? 0);
+    $metodo_pago = trim($_POST['formato_pago'] ?? '');
+    $total_ingreso = isset($_POST['TotalIngreso']) ? (float)$_POST['TotalIngreso'] : 0;
+
+    if (!$id_cliente || !$plan_id) {
+        $mensaje = '✗ Debes seleccionar cliente y plan para procesar el pago';
+    } else {
+        $stmt = mysqli_prepare($conn, "SELECT id_plan, nombre_plan, precio, duracion_dias FROM planes WHERE id_plan = ? AND activo = 1");
+        mysqli_stmt_bind_param($stmt, 'i', $plan_id);
+        mysqli_stmt_execute($stmt);
+        $res_plan = mysqli_stmt_get_result($stmt);
+        $plan = mysqli_fetch_assoc($res_plan);
+
+        if (!$plan) {
+            $mensaje = '✗ Plan seleccionado no válido';
+        } elseif ($metodo_pago === 'efectivo' && $total_ingreso < (float)$plan['precio']) {
+            $mensaje = '✗ El ingreso en efectivo debe ser igual o mayor al total a pagar';
+        } else {
+            $duracion = (int)$plan['duracion_dias'];
+            $nueva_vencimiento = date('Y-m-d', strtotime("+{$duracion} days"));
+
+            // Actualizar cliente con plan y vencimiento
+            $stmt2 = mysqli_prepare($conn, "UPDATE clientes SET id_plan_actual = ?, fecha_vencimiento = ?, estatus = ? WHERE id_cliente = ?");
+            $estatus = ($metodo_pago === 'efectivo') ? 'activo' : 'inactivo';
+            mysqli_stmt_bind_param($stmt2, 'issi', $plan_id, $nueva_vencimiento, $estatus, $id_cliente);
+
+            if (mysqli_stmt_execute($stmt2)) {
+                if ($metodo_pago === 'efectivo') {
+                    $mensaje = '✓ Pago en efectivo procesado: estatus activo, plan y vencimiento actualizados';
+                } else {
+                    $mensaje = '✓ Pago procesado. Para activación automática se requiere efectivo';
+                }
+            } else {
+                $mensaje = '✗ Error al actualizar al cliente';
+            }
+        }
+    }
+
+    // recargar datos del cliente para mostrar en el formulario (si se procesó con éxito o no)
+    if ($id_cliente) {
+        $stmt = mysqli_prepare($conn, "SELECT c.*, p.nombre_plan, p.precio, p.duracion_dias FROM clientes c LEFT JOIN planes p ON c.id_plan_actual = p.id_plan WHERE c.id_cliente = ?");
+        mysqli_stmt_bind_param($stmt, 'i', $id_cliente);
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+        $cliente_seleccionado = mysqli_fetch_assoc($res);
+        $mostrar_formulario = true;
+    }
+}
+
 // ── Actualizar estatus automáticamente según fecha de vencimiento ─────────────
 mysqli_query($conn, "
     UPDATE clientes 
