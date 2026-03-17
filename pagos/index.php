@@ -16,6 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
 
     if (!$id_cliente || !$plan_id) {
         $mensaje = '✗ Debes seleccionar cliente y plan para procesar el pago';
+    } elseif (!$metodo_pago || $metodo_pago === 'opciones') {
+        $mensaje = '✗ Selecciona un método de pago válido';
     } else {
         $stmt = mysqli_prepare($conn, "SELECT id_plan, nombre_plan, precio, duracion_dias FROM planes WHERE id_plan = ? AND activo = 1");
         mysqli_stmt_bind_param($stmt, 'i', $plan_id);
@@ -30,20 +32,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
         } else {
             $duracion = (int)$plan['duracion_dias'];
             $nueva_vencimiento = date('Y-m-d', strtotime("+{$duracion} days"));
+            $fecha_pago = date('Y-m-d H:i:s');
+            $fecha_inicio = date('Y-m-d');
+            $fecha_fin = $nueva_vencimiento;
+            $metodo_sql = $metodo_pago === 'efectivo' ? 'efectivo' : 'tarjeta';
+            $estatus_pago = 'completado';
 
             // Actualizar cliente con plan y vencimiento
             $stmt2 = mysqli_prepare($conn, "UPDATE clientes SET id_plan_actual = ?, fecha_vencimiento = ?, estatus = ? WHERE id_cliente = ?");
-            $estatus = ($metodo_pago === 'efectivo') ? 'activo' : 'inactivo';
-            mysqli_stmt_bind_param($stmt2, 'issi', $plan_id, $nueva_vencimiento, $estatus, $id_cliente);
+            $estatus_cliente = ($metodo_pago === 'efectivo') ? 'activo' : 'inactivo';
+            mysqli_stmt_bind_param($stmt2, 'issi', $plan_id, $nueva_vencimiento, $estatus_cliente, $id_cliente);
 
-            if (mysqli_stmt_execute($stmt2)) {
-                if ($metodo_pago === 'efectivo') {
-                    $mensaje = '✓ Pago en efectivo procesado: estatus activo, plan y vencimiento actualizados';
-                } else {
-                    $mensaje = '✓ Pago procesado. Para activación automática se requiere efectivo';
-                }
-            } else {
+            if (!mysqli_stmt_execute($stmt2)) {
                 $mensaje = '✗ Error al actualizar al cliente';
+            } else {
+                // Insertar registro de pago
+                $id_usuario = $_SESSION['usuario_id'] ?? 1;
+                $monto = (float)$plan['precio'];
+                $stmtPago = mysqli_prepare($conn, "INSERT INTO pagos (id_cliente, id_plan, monto, metodo_pago, fecha_pago, fecha_inicio_vigencia, fecha_fin_vigencia, id_usuario_registro, estatus, fecha_creacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+                mysqli_stmt_bind_param($stmtPago, 'iidssssis', $id_cliente, $plan_id, $monto, $metodo_sql, $fecha_pago, $fecha_inicio, $fecha_fin, $id_usuario, $estatus_pago);
+
+                if (!mysqli_stmt_execute($stmtPago)) {
+                    $mensaje = '✗ Error al registrar el pago';
+                } else {
+                    if ($metodo_pago === 'efectivo') {
+                        $mensaje = '✓ Pago en efectivo procesado: estatus activo, plan y vencimiento actualizados';
+                    } else {
+                        $mensaje = '✓ Pago procesado y registrado correctamente';
+                    }
+                }
             }
         }
     }
