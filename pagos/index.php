@@ -9,10 +9,10 @@ $cliente_seleccionado = null;
 
 // ── Procesar pago POST ───────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'procesar_pago') {
-    $id_cliente = (int)($_POST['idActual'] ?? 0);
-    $plan_id = (int)($_POST['plan'] ?? 0);
+    $id_cliente = (int) ($_POST['idActual'] ?? 0);
+    $plan_id = (int) ($_POST['plan'] ?? 0);
     $metodo_pago = trim($_POST['formato_pago'] ?? '');
-    $total_ingreso = isset($_POST['TotalIngreso']) ? (float)$_POST['TotalIngreso'] : 0;
+    $total_ingreso = isset($_POST['TotalIngreso']) ? (float) $_POST['TotalIngreso'] : 0;
 
     if (!$id_cliente || !$plan_id) {
         $mensaje = '✗ Debes seleccionar cliente y plan para procesar el pago';
@@ -27,10 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
 
         if (!$plan) {
             $mensaje = '✗ Plan seleccionado no válido';
-        } elseif ($metodo_pago === 'efectivo' && $total_ingreso < (float)$plan['precio']) {
+        } elseif ($metodo_pago === 'efectivo' && $total_ingreso < (float) $plan['precio']) {
             $mensaje = '✗ El ingreso en efectivo debe ser igual o mayor al total a pagar';
         } else {
-            $duracion = (int)$plan['duracion_dias'];
+            $duracion = (int) $plan['duracion_dias'];
             $nueva_vencimiento = date('Y-m-d', strtotime("+{$duracion} days"));
             $fecha_pago = date('Y-m-d H:i:s');
             $fecha_inicio = date('Y-m-d');
@@ -48,12 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
             } else {
                 // Insertar registro de pago
                 $id_usuario = $_SESSION['usuario_id'] ?? 1;
-                $monto = (float)$plan['precio'];
+                $monto = (float) $plan['precio'];
                 $stmtPago = mysqli_prepare($conn, "INSERT INTO pagos (id_cliente, id_plan, monto, metodo_pago, fecha_pago, fecha_inicio_vigencia, fecha_fin_vigencia, id_usuario_registro, estatus, fecha_creacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
                 mysqli_stmt_bind_param($stmtPago, 'iidssssis', $id_cliente, $plan_id, $monto, $metodo_sql, $fecha_pago, $fecha_inicio, $fecha_fin, $id_usuario, $estatus_pago);
 
                 if (!mysqli_stmt_execute($stmtPago)) {
-                    $mensaje = '✗ Error al registrar el pago';
+                    $mensaje = '✗ Error al registrar el pago: ' . mysqli_error($conn);
                 } else {
                     if ($metodo_pago === 'efectivo') {
                         $mensaje = '✓ Pago en efectivo procesado: estatus activo, plan y vencimiento actualizados';
@@ -114,8 +114,9 @@ $clientes = [];
 
 if ($busqueda) {
     $stmt = mysqli_prepare($conn, "
-        SELECT id_cliente, nombre, apellido, email, telefono, estatus, fecha_vencimiento 
+        SELECT id_cliente, nombre, apellido, email, telefono, estatus, fecha_vencimiento , nombre_plan
         FROM clientes 
+        LEFT JOIN  planes ON clientes.id_plan_actual = planes.id_plan
         WHERE nombre LIKE ? OR apellido LIKE ? OR email LIKE ? OR telefono LIKE ?
         ORDER BY nombre
     ");
@@ -125,8 +126,9 @@ if ($busqueda) {
     $res = mysqli_stmt_get_result($stmt);
 } else {
     $res = mysqli_query($conn, "
-        SELECT id_cliente, nombre, apellido, email, telefono, estatus, fecha_vencimiento 
+        SELECT id_cliente, nombre, apellido, email, telefono, estatus, fecha_vencimiento , nombre_plan
         FROM clientes 
+        LEFT JOIN planes ON clientes.id_plan_actual = planes.id_plan
         ORDER BY nombre
     ");
 }
@@ -223,6 +225,7 @@ while ($row = mysqli_fetch_assoc($res))
                                     <th class="px-4 py-3 text-left">Nombre completo</th>
                                     <th class="px-4 py-3 text-left">Teléfono</th>
                                     <th class="px-4 py-3 text-left">Email</th>
+                                    <th class="px-4 py-3 text-left">Plan</th>
                                     <th class="px-4 py-3 text-left">Vencimiento</th>
                                     <th class="px-4 py-3 text-left">Status</th>
                                 </tr>
@@ -240,6 +243,7 @@ while ($row = mysqli_fetch_assoc($res))
                                             </td>
                                             <td class="px-4 py-3"><?= htmlspecialchars($c['telefono']) ?></td>
                                             <td class="px-4 py-3"><?= htmlspecialchars($c['email']) ?></td>
+                                            <td class="px-4 py-3"><?= htmlspecialchars($c['nombre_plan']) ?></td>
                                             <td class="px-4 py-3">
                                                 <?php if ($c['fecha_vencimiento']): ?>
                                                     <?php
