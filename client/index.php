@@ -163,9 +163,11 @@ while ($row = mysqli_fetch_assoc($res)) $clientes[] = $row;
                                     </a>
                                 <?php endif; ?>
                             </form>
+                            <?php if (in_array($_SESSION['rol'], ['admin', 'recepcionista'])): ?>
                             <a href="?id=nuevo" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2 whitespace-nowrap">
                                 <i class="fa-solid fa-plus"></i> Agregar
                             </a>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -194,9 +196,15 @@ while ($row = mysqli_fetch_assoc($res)) $clientes[] = $row;
                                         <tr class="border-b border-gray-700 hover:bg-gray-750 transition">
                                             <td class="px-4 py-3"><?= $c['id_cliente'] ?></td>
                                             <td class="px-4 py-3">
-                                                <a href="?id=<?= $c['id_cliente'] ?>" class="text-blue-400 hover:text-blue-300 hover:underline">
-                                                    <?= htmlspecialchars($c['nombre'] . ' ' . $c['apellido']) ?>
-                                                </a>
+                                                <?php if (in_array($_SESSION['rol'], ['admin', 'recepcionista'])): ?>
+                                                    <a href="?id=<?= $c['id_cliente'] ?>" class="text-blue-400 hover:text-blue-300 hover:underline">
+                                                        <?= htmlspecialchars($c['nombre'] . ' ' . $c['apellido']) ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <span class="text-gray-300">
+                                                        <?= htmlspecialchars($c['nombre'] . ' ' . $c['apellido']) ?>
+                                                    </span>
+                                                <?php endif; ?>
                                             </td>
                                             <td class="px-4 py-3"><?= htmlspecialchars($c['telefono']) ?></td>
                                             <td class="px-4 py-3"><?= htmlspecialchars($c['email']) ?></td>

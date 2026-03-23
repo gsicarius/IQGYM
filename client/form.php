@@ -81,7 +81,7 @@
                     <?= $cliente_seleccionado ? 'Actualizar' : 'Guardar' ?>
                 </button>
 
-                <?php if ($cliente_seleccionado): ?>
+                <?php if ($_SESSION['rol'] === 'admin' && $cliente_seleccionado): ?>
                     <button type="submit" name="accion" value="eliminar"
                         onclick="return confirm('¿Eliminar este cliente?')"
                         class="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 

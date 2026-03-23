@@ -111,10 +111,12 @@ while ($row = mysqli_fetch_assoc($res)) {
                             <i class="fa-solid fa-users mr-2"></i> planes Registrados
                         </h2>
 
-                        <a href="?id=nuevo"
-                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2 whitespace-nowrap">
-                            <i class="fa-solid fa-plus"></i> Agregar
-                        </a>
+                        <?php if ($_SESSION['rol'] === 'admin'): ?>
+                            <a href="?id=nuevo"
+                                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2 whitespace-nowrap">
+                                <i class="fa-solid fa-plus"></i> Agregar
+                            </a>
+                        <?php endif; ?>
 
                         <div class="overflow-x-auto">
                             <?php if (count($planes) > 0): ?>
