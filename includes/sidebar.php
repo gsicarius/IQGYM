@@ -89,6 +89,15 @@ $ruta_actual = $_SERVER['PHP_SELF'];
                 </a>
             <?php endif; ?>
 
+            <!-- Clases -->
+            
+                <a href="<?php echo $base; ?>/clases_coach/index.php"
+                    class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/clases/') !== false ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''; ?>">
+                    <i class="fa-solid fa-dumbbell w-5 text-center"></i>
+                    <span class="text-sm font-medium">Clases</span>
+                </a>
+            
+
             <!-- Agenda - TODOS -->
             <a href="<?php echo $base; ?>/agenda/index.php"
                 class="flex items-center gap-3 px-6 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors <?php echo strpos($ruta_actual, '/agenda/') !== false ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''; ?>">

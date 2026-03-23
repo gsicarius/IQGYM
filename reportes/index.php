@@ -27,19 +27,20 @@ $r = mysqli_query($conn, "
     ORDER BY YEAR(fecha_pago), MONTH(fecha_pago)
 ");
 $ingresos_labels = [];
-$ingresos_data   = [];
+$ingresos_data = [];
 while ($row = mysqli_fetch_assoc($r)) {
     $ingresos_labels[] = $row['mes'];
-    $ingresos_data[]   = (float) $row['total'];
+    $ingresos_data[] = (float) $row['total'];
 }
 
 // ── GRÁFICA: Dona clientes ────────────────────────────────────────────────────
-$dona_data = [(int)$kpi_clientes['activos'], (int)$kpi_clientes['inactivos'], (int)$kpi_clientes['suspendidos']];
+$dona_data = [(int) $kpi_clientes['activos'], (int) $kpi_clientes['inactivos'], (int) $kpi_clientes['suspendidos']];
 
 // ── TABLA: Últimos pagos del mes ─────────────────────────────────────────────
 $r = mysqli_query($conn, "SELECT * FROM v_pagos_mes_actual ORDER BY fecha_pago DESC LIMIT 8");
 $ultimos_pagos = [];
-while ($row = mysqli_fetch_assoc($r)) $ultimos_pagos[] = $row;
+while ($row = mysqli_fetch_assoc($r))
+    $ultimos_pagos[] = $row;
 
 // ── TABLA: Vencimientos próximos ─────────────────────────────────────────────
 $r = mysqli_query($conn, "
@@ -52,10 +53,12 @@ $r = mysqli_query($conn, "
     LIMIT 6
 ");
 $por_vencer = [];
-while ($row = mysqli_fetch_assoc($r)) $por_vencer[] = $row;
+while ($row = mysqli_fetch_assoc($r))
+    $por_vencer[] = $row;
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,6 +67,7 @@ while ($row = mysqli_fetch_assoc($r)) $por_vencer[] = $row;
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
+
 <body class="bg-gray-900">
     <?php include '../includes/sidebar.php'; ?>
 
@@ -168,40 +172,46 @@ while ($row = mysqli_fetch_assoc($r)) $por_vencer[] = $row;
                         <i class="fa-solid fa-receipt mr-2 text-gray-400"></i>Últimos pagos del mes
                     </h2>
                     <?php if (count($ultimos_pagos) > 0): ?>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-white">
-                            <thead class="bg-gray-700">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Cliente</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Plan</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Monto</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($ultimos_pagos as $p): ?>
-                                    <?php
-                                    $badge = match($p['estatus']) {
-                                        'completado' => 'bg-green-600',
-                                        'pendiente'  => 'bg-yellow-600',
-                                        'cancelado'  => 'bg-red-600',
-                                        default      => 'bg-gray-600'
-                                    };
-                                    ?>
-                                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                                        <td class="px-4 py-3 text-sm"><?= htmlspecialchars($p['cliente']) ?></td>
-                                        <td class="px-4 py-3 text-sm text-gray-400"><?= htmlspecialchars($p['nombre_plan']) ?></td>
-                                        <td class="px-4 py-3 text-sm text-green-400 font-semibold">$<?= number_format($p['monto'], 2) ?></td>
-                                        <td class="px-4 py-3">
-                                            <span class="px-2 py-1 <?= $badge ?> text-white text-xs rounded uppercase">
-                                                <?= $p['estatus'] ?>
-                                            </span>
-                                        </td>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-white">
+                                <thead class="bg-gray-700">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                            Cliente</th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Plan
+                                        </th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Monto
+                                        </th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                            Estado</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($ultimos_pagos as $p): ?>
+                                        <?php
+                                        $badge = match ($p['estatus']) {
+                                            'completado' => 'bg-green-600',
+                                            'pendiente' => 'bg-yellow-600',
+                                            'cancelado' => 'bg-red-600',
+                                            default => 'bg-gray-600'
+                                        };
+                                        ?>
+                                        <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
+                                            <td class="px-4 py-3 text-sm"><?= htmlspecialchars($p['cliente']) ?></td>
+                                            <td class="px-4 py-3 text-sm text-gray-400">
+                                                <?= htmlspecialchars($p['nombre_plan']) ?></td>
+                                            <td class="px-4 py-3 text-sm text-green-400 font-semibold">
+                                                $<?= number_format($p['monto'], 2) ?></td>
+                                            <td class="px-4 py-3">
+                                                <span class="px-2 py-1 <?= $badge ?> text-white text-xs rounded uppercase">
+                                                    <?= $p['estatus'] ?>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     <?php else: ?>
                         <p class="text-center text-gray-400 py-8 text-sm">Sin pagos este mes</p>
                     <?php endif; ?>
@@ -212,32 +222,36 @@ while ($row = mysqli_fetch_assoc($r)) $por_vencer[] = $row;
                         <i class="fa-solid fa-calendar-xmark mr-2 text-gray-400"></i>Vencimientos próximos (14 días)
                     </h2>
                     <?php if (count($por_vencer) > 0): ?>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-white">
-                            <thead class="bg-gray-700">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Cliente</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Vence</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Días</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($por_vencer as $v): ?>
-                                    <?php
-                                    $dias  = (int) $v['dias'];
-                                    $color = $dias <= 3 ? 'text-red-400' : ($dias <= 7 ? 'text-yellow-400' : 'text-gray-300');
-                                    ?>
-                                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                                        <td class="px-4 py-3 text-sm"><?= htmlspecialchars($v['nombre_completo']) ?></td>
-                                        <td class="px-4 py-3 text-sm text-gray-400"><?= date('d/m/Y', strtotime($v['fecha_vencimiento'])) ?></td>
-                                        <td class="px-4 py-3 text-sm font-semibold <?= $color ?>">
-                                            <?= $dias === 0 ? 'Hoy' : $dias . ' días' ?>
-                                        </td>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-white">
+                                <thead class="bg-gray-700">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                            Cliente</th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Vence
+                                        </th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Días
+                                        </th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($por_vencer as $v): ?>
+                                        <?php
+                                        $dias = (int) $v['dias'];
+                                        $color = $dias <= 3 ? 'text-red-400' : ($dias <= 7 ? 'text-yellow-400' : 'text-gray-300');
+                                        ?>
+                                        <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
+                                            <td class="px-4 py-3 text-sm"><?= htmlspecialchars($v['nombre_completo']) ?></td>
+                                            <td class="px-4 py-3 text-sm text-gray-400">
+                                                <?= date('d/m/Y', strtotime($v['fecha_vencimiento'])) ?></td>
+                                            <td class="px-4 py-3 text-sm font-semibold <?= $color ?>">
+                                                <?= $dias === 0 ? 'Hoy' : $dias . ' días' ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     <?php else: ?>
                         <p class="text-center text-gray-400 py-8 text-sm">Sin vencimientos próximos</p>
                     <?php endif; ?>
@@ -321,4 +335,5 @@ while ($row = mysqli_fetch_assoc($r)) $por_vencer[] = $row;
 
     <?php include '../includes/footer.php'; ?>
 </body>
+
 </html>
