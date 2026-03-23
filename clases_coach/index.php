@@ -178,9 +178,15 @@ $dias = ['', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'D
                                         data-fecha="<?= $c['fecha_creacion'] ? date('Y-m-d', strtotime($c['fecha_creacion'])) : '' ?>">
                                         <td class="py-3 px-4 text-gray-400 font-mono text-xs"><?= $c['id_clase'] ?></td>
                                         <td class="py-3 px-4 font-semibold">
-                                            <a href="?id=<?= $c['id_clase'] ?>" class="text-blue-400 hover:text-blue-300 hover:underline">
-                                                <?= htmlspecialchars($c['nombre_clase']) ?>
-                                            </a>
+                                            <?php if ($_SESSION['rol'] !== 'entrenador'): ?>
+                                                <a href="?id=<?= $c['id_clase'] ?>" class="text-blue-400 hover:text-blue-300 hover:underline">
+                                                    <?= htmlspecialchars($c['nombre_clase']) ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <span class="text-gray-300">
+                                                    <?= htmlspecialchars($c['nombre_clase']) ?>
+                                                </span>
+                                            <?php endif; ?>
                                         </td>
                                         <td class="py-3 px-4 text-gray-400 max-w-xs truncate"><?= htmlspecialchars($c['descripcion']) ?></td>
                                         <td class="py-3 px-4 text-gray-300"><?= htmlspecialchars($c['nombre_entrenador'] ?? '—') ?></td>
